@@ -8,8 +8,9 @@ colors = {
 
 def extract(file_path):
     with open(file_path, 'r') as ofile:
+        unique_classes = []
         soup = BeautifulSoup(ofile.read(), 'html.parser')
-        messages = soup.find_all("div", ["message", "default"])
+        messages = soup.select("div.message.default")
         print(f"    {len(messages)} messages")
 
 def main(dir_path):
