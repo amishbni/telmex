@@ -1,4 +1,4 @@
-import sys, os
+import sys, os, csv
 from bs4 import BeautifulSoup
 
 colors = {
@@ -6,18 +6,26 @@ colors = {
     "green": "\033[92m"
 }
 
-def extract(file_path):
-    with open(file_path, 'r') as ofile:
-        unique_classes = []
-        soup = BeautifulSoup(ofile.read(), 'html.parser')
+def extract(file_path, output_file_name):
+    with open(file_path, 'r') as out_file, open(f"{output_file_name}.csv", 'a') as in_file:
+        writer = csv.writer(in_file)
+        soup = BeautifulSoup(out_file.read(), 'html.parser')
         messages = soup.select("div.message.default")
-        print(f"    {len(messages)} messages")
-
+        from_name = ""
+        for message in messages:
+            row = []
+            row.append(message['id'])
+            from_name_div = message.select("div.body > div.from_name")
+            if(from_name_div):
+                from_name = from_name_div[0].text.strip()
+            row.append(from_name)
+            writer.writerow(row)
 def main(dir_path):
     for file in os.listdir(dir_path):
         if(file.endswith(".html")):
             print(f"{colors['green']}➤ parsing {file}{colors['default']}")
-            extract(os.path.join(dir_path, file))
+            output_file_name = os.path.basename(os.path.normpath(dir_path))
+            extract(os.path.join(dir_path, file), output_file_name)
 
 if __name__ == "__main__":
     if(len(sys.argv) >= 2):
