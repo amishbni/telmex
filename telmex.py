@@ -15,7 +15,7 @@ def extract(input_address, output_address):
         reply_to = 0
         for message in messages:
             row = []
-            row.append(message['id'])
+            row.append(int(message['id'].replace("message", "")))
             reply_to_div = message.select("div[class='body'] > div[class='reply_to details'] > a")
             if(reply_to_div):
                 reply_to = int(reply_to_div[0]["href"].split("message")[-1])
