@@ -7,8 +7,10 @@ colors = {
 }
 
 def extract(input_address, output_address):
+    columns = ["message_id", "sender"]
     with open(input_address, 'r') as input_file, open(f"{output_address}.csv", 'a') as output_file:
         writer = csv.writer(output_file)
+        writer.writerow(columns)
         soup = BeautifulSoup(input_file.read(), 'html.parser')
         messages = soup.select("div.message.default")
         from_name = ""
