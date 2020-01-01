@@ -6,10 +6,10 @@ colors = {
     "green": "\033[92m"
 }
 
-def extract(file_path, output_file_name):
-    with open(file_path, 'r') as out_file, open(f"{output_file_name}.csv", 'a') as in_file:
-        writer = csv.writer(in_file)
-        soup = BeautifulSoup(out_file.read(), 'html.parser')
+def extract(input_address, output_address):
+    with open(input_address, 'r') as input_file, open(f"{output_address}.csv", 'a') as output_file:
+        writer = csv.writer(output_file)
+        soup = BeautifulSoup(input_file.read(), 'html.parser')
         messages = soup.select("div.message.default")
         from_name = ""
         for message in messages:
@@ -25,7 +25,9 @@ def main(dir_path):
         if(file.endswith(".html")):
             print(f"{colors['green']}➤ parsing {file}{colors['default']}")
             output_file_name = os.path.basename(os.path.normpath(dir_path))
-            extract(os.path.join(dir_path, file), output_file_name)
+            input_file = os.path.join(dir_path, file)
+            output_file = os.path.join(dir_path, output_file_name)
+            extract(input_file, output_file)
 
 if __name__ == "__main__":
     if(len(sys.argv) >= 2):
