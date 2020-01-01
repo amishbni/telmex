@@ -7,10 +7,8 @@ colors = {
 }
 
 def extract(input_address, output_address):
-    columns = ["message_id", "sender"]
     with open(input_address, 'r') as input_file, open(f"{output_address}.csv", 'a') as output_file:
         writer = csv.writer(output_file)
-        writer.writerow(columns)
         soup = BeautifulSoup(input_file.read(), 'html.parser')
         messages = soup.select("div.message.default")
         from_name = ""
@@ -23,13 +21,17 @@ def extract(input_address, output_address):
             row.append(from_name)
             writer.writerow(row)
 def main(dir_path):
+    columns = ["message_id", "sender"]
+    output_file_name = os.path.basename(os.path.normpath(dir_path))
+    output_address = os.path.join(dir_path, output_file_name)
+    with open(f"{output_address}.csv", 'a') as output_file:
+        writer = csv.writer(output_file)
+        writer.writerow(columns)
     for file in os.listdir(dir_path):
         if(file.endswith(".html")):
             print(f"{colors['green']}➤ parsing {file}{colors['default']}")
-            output_file_name = os.path.basename(os.path.normpath(dir_path))
-            input_file = os.path.join(dir_path, file)
-            output_file = os.path.join(dir_path, output_file_name)
-            extract(input_file, output_file)
+            input_address = os.path.join(dir_path, file)
+            extract(input_address, output_address)
 
 if __name__ == "__main__":
     if(len(sys.argv) >= 2):
