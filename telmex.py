@@ -18,6 +18,8 @@ def extract(input_address, output_address):
             from_name_div = message.select("div[class='body'] > div.from_name")
             if(from_name_div):
                 from_name = from_name_div[0].text.strip()
+                if("via @" in from_name):
+                    from_name = (from_name.split("via")[0]).strip()
             row.append(from_name)
             writer.writerow(row)
 
