@@ -15,11 +15,12 @@ def extract(input_address, output_address):
         for message in messages:
             row = []
             row.append(message['id'])
-            from_name_div = message.select("div.body > div.from_name")
+            from_name_div = message.select("div[class='body'] > div.from_name")
             if(from_name_div):
                 from_name = from_name_div[0].text.strip()
             row.append(from_name)
             writer.writerow(row)
+
 def main(dir_path):
     columns = ["message_id", "sender"]
     output_file_name = os.path.basename(os.path.normpath(dir_path))
