@@ -1,5 +1,6 @@
 import sys, os, csv
 from bs4 import BeautifulSoup
+from datetime import datetime as dt
 
 colors = {
     "default": "\033[0m",
@@ -12,7 +13,7 @@ def extract(input_address, output_address):
         soup = BeautifulSoup(input_file.read(), 'html.parser')
         messages = soup.select("div.message.default")
         from_name, message_type = [""]*2
-        reply_to = 0
+        reply_to, message_date = [0]*2
         for message in messages:
             row = []
 
@@ -47,10 +48,16 @@ def extract(input_address, output_address):
             else:
                 message_type = "text"
             row.append(message_type)
+
+            # message_date
+            date_div = message.select("div[class='body'] > div.date")
+            if(date_div):
+                message_date = int(dt.strptime(date_div[0]["title"], "%d.%m.%Y %H:%M:%S").strftime("%s"))
+            row.append(message_date)
             writer.writerow(row)
 
 def main(dir_path):
-    columns = ["message_id", "reply_to", "sender", "message_type"]
+    columns = ["message_id", "reply_to", "sender", "message_type", "message_date"]
     output_file_name = os.path.basename(os.path.normpath(dir_path))
     output_address = os.path.join(dir_path, output_file_name)
     with open(f"{output_address}.csv", 'a') as output_file:
