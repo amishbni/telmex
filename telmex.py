@@ -13,7 +13,7 @@ def extract(input_address, output_address):
         soup = BeautifulSoup(input_file.read(), 'html.parser')
         messages = soup.select("div.message.default")
         from_name, message_type = [""]*2
-        reply_to, message_date = [0]*2
+        reply_to, message_date, is_forwarded = [0]*3
         for message in messages:
             row = []
 
@@ -54,10 +54,19 @@ def extract(input_address, output_address):
             if(date_div):
                 message_date = int(dt.strptime(date_div[0]["title"], "%d.%m.%Y %H:%M:%S").strftime("%s"))
             row.append(message_date)
+
+            # is_forwarded
+            is_forwarded_div = message.select("div.forwarded")
+            if(is_forwarded_div):
+                is_forwarded = 1
+            else:
+                is_forwarded = 0
+            row.append(is_forwarded)
+
             writer.writerow(row)
 
 def main(dir_path):
-    columns = ["message_id", "reply_to", "sender", "message_type", "message_date"]
+    columns = ["message_id", "reply_to", "sender", "message_type", "message_date", "is_forwarded"]
     output_file_name = os.path.basename(os.path.normpath(dir_path))
     output_address = os.path.join(dir_path, output_file_name)
     with open(f"{output_address}.csv", 'a') as output_file:
