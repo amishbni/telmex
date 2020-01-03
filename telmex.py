@@ -12,7 +12,7 @@ def extract(input_address, output_address):
         writer = csv.writer(output_file)
         soup = BeautifulSoup(input_file.read(), 'html.parser')
         messages = soup.select("div.message.default")
-        from_name, message_type, forwarded_from = [""]*3
+        from_name, message_type, forwarded_from, caption, text = [""]*5
         reply_to_id, message_date, is_forwarded = [0]*3
         for message in messages:
             row = []
@@ -38,6 +38,7 @@ def extract(input_address, output_address):
 
             # message_type
             message_type_div = message.select("div.body > div.media_wrap > div.media")
+            text_or_caption_div = message.select("div[class='body'] > div[class='text']")
             if(message_type_div):
                 message_type = message_type_div[0]["class"][-1].replace("media_", "")
                 if(message_type in ["photo", "video"]):
@@ -45,8 +46,18 @@ def extract(input_address, output_address):
                 if(message_type in ["audio_file", "voice_message"]):
                     message_type = message_type.split("_")[0]
                 message_type = message_type.strip()
+                text = ""
+                if(text_or_caption_div):
+                    caption = text_or_caption_div[0].text.strip()
+                else:
+                    caption = ""
             else:
                 message_type = "text"
+                caption = ""
+                if(text_or_caption_div):
+                    text = text_or_caption_div[0].text.strip()
+                else:
+                    text = ""
             row.append(message_type)
 
             # message_date
@@ -72,11 +83,15 @@ def extract(input_address, output_address):
             else:
                 forwarded_from = ""
             row.append(forwarded_from)
+
+            # text and caption
+            row.append(text)
+            row.append(caption)
             writer.writerow(row)
 
 def main(dir_path):
     columns = ["message_id", "reply_to_id", "sender", "message_type", "message_date", "is_forwarded",
-            "forwarded_from"]
+            "forwarded_from", "text", "caption"]
     output_file_name = os.path.basename(os.path.normpath(dir_path))
     output_address = os.path.join(dir_path, output_file_name)
     with open(f"{output_address}.csv", 'a') as output_file:
