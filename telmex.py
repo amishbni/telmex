@@ -90,7 +90,7 @@ def extract(input_address, output_address):
             row.append(caption)
 
             # media details
-            media_details_div = message.select("div[class='status details']")
+            media_details_div = message.select("div.body > div.media_wrap > div.media > div.body > div[class='status details']")
             if(media_details_div):
                 media_details = media_details_div[0].text.strip().split(',')
                 if(len(media_details) == 1):
