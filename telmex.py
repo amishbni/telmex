@@ -94,7 +94,10 @@ def extract(input_address, output_address):
             if(media_details_div):
                 media_details = media_details_div[0].text.strip().split(',')
                 if(len(media_details) == 1):
-                    media_size = media_details[0].strip()
+                    if(message_type == "contact"):
+                        media_size = ""
+                    else:
+                        media_size = media_details[0].strip()
                     media_duration, photo_resolution, sticker_emoji = [""]*3
                 else:
                     if(":" in media_details[0]):
