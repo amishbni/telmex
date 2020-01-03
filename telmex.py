@@ -13,20 +13,20 @@ def extract(input_address, output_address):
         soup = BeautifulSoup(input_file.read(), 'html.parser')
         messages = soup.select("div.message.default")
         from_name, message_type, forwarded_from = [""]*3
-        reply_to, message_date, is_forwarded = [0]*3
+        reply_to_id, message_date, is_forwarded = [0]*3
         for message in messages:
             row = []
 
             # message_id
             row.append(int(message['id'].replace("message", "")))
 
-            # reply_to
-            reply_to_div = message.select("div[class='body'] > div[class='reply_to details'] > a")
-            if(reply_to_div):
-                reply_to = int(reply_to_div[0]["href"].split("message")[-1])
+            # reply_to_id
+            reply_to_id_div = message.select("div[class='body'] > div[class='reply_to details'] > a")
+            if(reply_to_id_div):
+                reply_to_id = int(reply_to_id_div[0]["href"].split("message")[-1])
             else:
-                reply_to = 0
-            row.append(reply_to)
+                reply_to_id = 0
+            row.append(reply_to_id)
 
             # sender
             from_name_div = message.select("div[class='body'] > div.from_name")
@@ -75,7 +75,7 @@ def extract(input_address, output_address):
             writer.writerow(row)
 
 def main(dir_path):
-    columns = ["message_id", "reply_to", "sender", "message_type", "message_date", "is_forwarded",
+    columns = ["message_id", "reply_to_id", "sender", "message_type", "message_date", "is_forwarded",
             "forwarded_from"]
     output_file_name = os.path.basename(os.path.normpath(dir_path))
     output_address = os.path.join(dir_path, output_file_name)
