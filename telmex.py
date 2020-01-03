@@ -94,19 +94,19 @@ def extract(input_address, output_address):
             if(media_details_div):
                 media_details = media_details_div[0].text.strip().split(',')
                 if(len(media_details) == 1):
-                    media_size = media_details[0]
+                    media_size = media_details[0].strip()
                     media_duration, photo_resolution, sticker_emoji = [""]*3
                 else:
                     if(":" in media_details[0]):
-                        media_duration = media_details[0]
+                        media_duration = media_details[0].strip()
                         sticker_emoji, photo_resolution = [""]*2
                     elif("x" in media_details[0]):
-                        photo_resolution = media_details[0]
+                        photo_resolution = media_details[0].strip()
                         sticker_emoji, media_duration = [""]*2
                     else:
-                        sticker_emoji = media_details[0]
+                        sticker_emoji = media_details[0].strip()
                         photo_resolution, media_duration = [""]*2
-                    media_size = media_details[1]
+                    media_size = media_details[1].strip()
             else:
                 media_size, photo_resolution, media_duration, sticker_emoji = [""]*4
 
