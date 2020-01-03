@@ -13,6 +13,7 @@ def extract(input_address, output_address):
         soup = BeautifulSoup(input_file.read(), 'html.parser')
         messages = soup.select("div.message.default")
         from_name, message_type, forwarded_from, caption, text = [""]*5
+        media_size, photo_resolution, media_duration, sticker_emoji = [""]*4
         reply_to_id, message_date, is_forwarded = [0]*3
         for message in messages:
             row = []
@@ -87,11 +88,34 @@ def extract(input_address, output_address):
             # text and caption
             row.append(text)
             row.append(caption)
+
+            # media details
+            media_details_div = message.select("div[class='status details']")
+            if(media_details_div):
+                media_details = media_details_div[0].text.strip().split(',')
+                if(len(media_details) == 1):
+                    media_size = media_details[0]
+                    media_duration, photo_resolution, sticker_emoji = [""]*3
+                else:
+                    if(":" in media_details[0]):
+                        media_duration = media_details[0]
+                        sticker_emoji, photo_resolution = [""]*2
+                    elif("x" in media_details[0]):
+                        photo_resolution = media_details[0]
+                        sticker_emoji, media_duration = [""]*2
+                    else:
+                        sticker_emoji = media_details[0]
+                        photo_resolution, media_duration = [""]*2
+                    media_size = media_details[1]
+            else:
+                media_size, photo_resolution, media_duration, sticker_emoji = [""]*4
+
+            row.extend([media_size, photo_resolution, media_duration, sticker_emoji])
             writer.writerow(row)
 
 def main(dir_path):
     columns = ["message_id", "reply_to_id", "sender", "message_type", "message_date", "is_forwarded",
-            "forwarded_from", "text", "caption"]
+            "forwarded_from", "text", "caption", "media_size", "photo_resolution", "media_duration", "sticker_emoji"]
     output_file_name = os.path.basename(os.path.normpath(dir_path))
     output_address = os.path.join(dir_path, output_file_name)
     with open(f"{output_address}.csv", 'a') as output_file:
