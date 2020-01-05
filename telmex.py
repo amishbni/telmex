@@ -148,7 +148,8 @@ def main(dir_path):
         writer.writerow(columns)
     for file in os.listdir(dir_path):
         if(file.endswith(".html")):
-            print(f"{colors['green']}→ parsing {file}{colors['default']}")
+            sys.stdout.write('\033[2K\033[1G')
+            print(f"{colors['green']}→ parsing {file}{colors['default']}", end='\r')
             input_address = os.path.join(dir_path, file)
             extract(input_address, output_address)
 
