@@ -148,7 +148,7 @@ def main(dir_path):
         writer.writerow(columns)
     for file in os.listdir(dir_path):
         if(file.endswith(".html")):
-            print(f"{colors['green']}➤ parsing {file}{colors['default']}")
+            print(f"{colors['green']}→ parsing {file}{colors['default']}")
             input_address = os.path.join(dir_path, file)
             extract(input_address, output_address)
 
