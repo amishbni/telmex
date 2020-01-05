@@ -7,6 +7,17 @@ colors = {
     "green": "\033[92m"
 }
 
+def to_KB(media_size_string):
+    media_size, size_format = media_size_string.split(' ')
+    if(size_format == "GB"):
+        return float(media_size.strip())*1000000
+    elif(size_format == "MB"):
+        return float(media_size.strip())*1000
+    elif(size_format == "B"):
+        return float(media_size.strip())/1000
+    else:
+        return float(media_size.strip())
+
 def extract(input_address, output_address):
     with open(input_address, 'r') as input_file, open(f"{output_address}.csv", 'a') as output_file:
         writer = csv.writer(output_file)
@@ -110,6 +121,9 @@ def extract(input_address, output_address):
                         sticker_emoji = media_details[0].strip()
                         photo_resolution, media_duration = [""]*2
                     media_size = media_details[1].strip()
+
+                if(media_size):
+                    media_size = to_KB(media_size)
             else:
                 media_size, photo_resolution, media_duration, sticker_emoji = [""]*4
 
