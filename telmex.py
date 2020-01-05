@@ -1,11 +1,31 @@
 import sys, os, csv
 from bs4 import BeautifulSoup
 from datetime import datetime as dt
+import pandas as pd
 
 colors = {
     "default": "\033[0m",
     "green": "\033[92m"
 }
+
+def reply_to_sender(data, reply_to_id):
+    if(reply_to_id != 0):
+        reply_to_sender_values = data.loc[data["message_id"] == reply_to_id]["sender"].values
+        if len(reply_to_sender_values) == 1:
+            return reply_to_sender_values[0]
+        else:
+            return ""
+    else:
+        return ""
+
+def create_reply_to_sender(output_address):
+    data = pd.read_csv(output_address)
+    data.insert(loc=3, column="reply_to_sender", value=data["reply_to_id"].apply(lambda x: reply_to_sender(data, x)))
+    data.to_csv(output_address, encoding='utf-8', index=False)
+
+def post_process(output_address):
+    print(f"→ creating new column, {colors['green']}reply_to_sender{colors['default']}")
+    create_reply_to_sender(output_address)
 
 def to_seconds(time_string):
     minutes, seconds = time_string.split(":")
@@ -149,9 +169,11 @@ def main(dir_path):
     for file in os.listdir(dir_path):
         if(file.endswith(".html")):
             sys.stdout.write('\033[2K\033[1G')
-            print(f"{colors['green']}→ parsing {file}{colors['default']}", end='\r')
+            print(f"→ parsing {colors['green']}{file}{colors['default']}", end='\r')
             input_address = os.path.join(dir_path, file)
             extract(input_address, output_address)
+    print()
+    post_process(f"{output_address}.csv")
 
 if __name__ == "__main__":
     if(len(sys.argv) >= 2):
