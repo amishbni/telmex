@@ -74,7 +74,8 @@ def extract(input_address, output_address):
 
             # message_type
             message_type_div = message.select("div.body > div.media_wrap > div.media")
-            text_or_caption_div = message.select("div[class='body'] > div[class='text']")
+            poll_div = message.select("div.body > div.media_wrap > div.media_poll")
+            text_or_caption_div = message.select("div.body > div[class='text']")
             if(message_type_div):
                 message_type = message_type_div[0]["class"][-1].replace("media_", "")
                 if(message_type in ["photo", "video"]):
@@ -87,6 +88,8 @@ def extract(input_address, output_address):
                     caption = text_or_caption_div[0].text.strip()
                 else:
                     caption = ""
+            elif(poll_div):
+                message_type = "poll"
             else:
                 message_type = "text"
                 caption = ""
