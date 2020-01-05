@@ -7,6 +7,10 @@ colors = {
     "green": "\033[92m"
 }
 
+def to_seconds(time_string):
+    minutes, seconds = time_string.split(":")
+    return (int(minutes) * 60) + int(seconds)
+
 def to_KB(media_size_string):
     media_size, size_format = media_size_string.split(' ')
     if(size_format == "GB"):
@@ -24,8 +28,8 @@ def extract(input_address, output_address):
         soup = BeautifulSoup(input_file.read(), 'html.parser')
         messages = soup.select("div.message.default")
         from_name, message_type, forwarded_from, caption, text = [""]*5
-        media_size, photo_resolution, media_duration, sticker_emoji = [""]*4
-        reply_to_id, message_date, is_forwarded = [0]*3
+        media_size, photo_resolution, sticker_emoji = [""]*3
+        reply_to_id, message_date, is_forwarded, media_duration = [0]*4
         for message in messages:
             row = []
 
@@ -109,23 +113,27 @@ def extract(input_address, output_address):
                         media_size = ""
                     else:
                         media_size = media_details[0].strip()
-                    media_duration, photo_resolution, sticker_emoji = [""]*3
+                    photo_resolution, sticker_emoji = [""]*2
+                    media_duration = 0
                 else:
                     if(":" in media_details[0]):
-                        media_duration = media_details[0].strip()
+                        media_duration = to_seconds(media_details[0].strip())
                         sticker_emoji, photo_resolution = [""]*2
                     elif("x" in media_details[0]):
                         photo_resolution = media_details[0].strip()
-                        sticker_emoji, media_duration = [""]*2
+                        sticker_emoji = ""
+                        media_duration = 0
                     else:
                         sticker_emoji = media_details[0].strip()
-                        photo_resolution, media_duration = [""]*2
+                        photo_resolution = ""
+                        media_duration = 0
                     media_size = media_details[1].strip()
 
                 if(media_size):
                     media_size = to_KB(media_size)
             else:
-                media_size, photo_resolution, media_duration, sticker_emoji = [""]*4
+                media_size, photo_resolution, sticker_emoji = [""]*3
+                media_duration = 0
 
             row.extend([media_size, photo_resolution, media_duration, sticker_emoji])
             writer.writerow(row)
