@@ -8,14 +8,30 @@ colors = {
     "green": "\033[92m"
 }
 
-def create_reply_to_sender(output_address):
-    data = pd.read_csv(output_address)
+def create_reply_to_sender(data):
     data.insert(loc=3, column="reply_to_sender", value=data['reply_to_id'].map(data.set_index('message_id')['sender']))
-    data.to_csv(output_address, encoding='utf-8', index=False)
+    return data
+
+def text_len(row):
+    if(type(row) == float):
+        return 0
+    else:
+        return len(row)
+
+def create_text_length(data):
+    data.insert(loc=9, column="text_length", value=data["text"].apply(lambda row: text_len(row)))
+    return data
 
 def post_process(output_address):
+    data = pd.read_csv(output_address)
     print(f"→ creating new column, {colors['green']}reply_to_sender{colors['default']}")
-    create_reply_to_sender(output_address)
+    data = create_reply_to_sender(data)
+
+    print(f"→ creating new column, {colors['green']}text_length{colors['default']}")
+    data = create_text_length(data)
+
+    print(f"→ saving to {colors['green']}{output_address}{colors['default']}")
+    data.to_csv(output_address, encoding='utf-8', index=False)
 
 def to_seconds(time_string):
     minutes, seconds = time_string.split(":")
