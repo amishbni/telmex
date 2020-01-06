@@ -40,8 +40,13 @@ def post_process(output_address):
     data.to_csv(output_address, encoding='utf-8', index=False)
 
 def to_seconds(time_string):
-    minutes, seconds = time_string.split(":")
-    return (int(minutes) * 60) + int(seconds)
+    time_elements = time_string.split(":")
+    if(len(time_elements) == 2):
+        minutes, seconds = time_elements
+        hours = 0
+    elif(len(time_elements) == 3):
+        hours, minutes, seconds = time_elements
+    return (int(hours) * 3600) + (int(minutes) * 60) + int(seconds)
 
 def to_KB(media_size_string):
     media_size, size_format = media_size_string.split(' ')
