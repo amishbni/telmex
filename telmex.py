@@ -8,19 +8,9 @@ colors = {
     "green": "\033[92m"
 }
 
-def reply_to_sender(data, reply_to_id):
-    if(reply_to_id != 0):
-        reply_to_sender_values = data.loc[data["message_id"] == reply_to_id]["sender"].values
-        if len(reply_to_sender_values) == 1:
-            return reply_to_sender_values[0]
-        else:
-            return ""
-    else:
-        return ""
-
 def create_reply_to_sender(output_address):
     data = pd.read_csv(output_address)
-    data.insert(loc=3, column="reply_to_sender", value=data["reply_to_id"].apply(lambda x: reply_to_sender(data, x)))
+    data.insert(loc=3, column="reply_to_sender", value=data['reply_to_id'].map(data.set_index('message_id')['sender']))
     data.to_csv(output_address, encoding='utf-8', index=False)
 
 def post_process(output_address):
