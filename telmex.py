@@ -5,7 +5,8 @@ import pandas as pd
 
 colors = {
     "default": "\033[0m",
-    "green": "\033[92m"
+    "green": "\033[92m",
+    "blue": "\033[94m"
 }
 
 def create_reply_to_sender(data):
@@ -24,13 +25,18 @@ def create_text_length(data):
 
 def post_process(output_address):
     data = pd.read_csv(output_address)
-    print(f"→ creating new column, {colors['green']}reply_to_sender{colors['default']}")
+    statement = f"→ creating new column, {colors['green']}reply_to_sender{colors['default']}, "
+    statement += f"at index {colors['blue']}3{colors['default']}"
+    print(statement)
     data = create_reply_to_sender(data)
 
-    print(f"→ creating new column, {colors['green']}text_length{colors['default']}")
+    statement = f"→ creating new column, {colors['green']}text_length{colors['default']}, "
+    statement += f"at index {colors['blue']}9{colors['default']}"
+    print(statement)
     data = create_text_length(data)
 
-    print(f"→ saving to {colors['green']}{output_address}{colors['default']}")
+    statement = f"→ saving to {colors['green']}{output_address}{colors['default']}"
+    print(statement)
     data.to_csv(output_address, encoding='utf-8', index=False)
 
 def to_seconds(time_string):
