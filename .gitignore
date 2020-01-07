@@ -4,3 +4,5 @@
 # Data dump
 /data
 
+# pycache directory
+/__pycache__
