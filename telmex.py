@@ -2,6 +2,7 @@ import sys, os, csv
 from bs4 import BeautifulSoup
 from datetime import datetime as dt
 import pandas as pd
+from emex import emex
 
 colors = {
     "default": "\033[0m",
@@ -23,6 +24,10 @@ def create_text_length(data):
     data.insert(loc=9, column="text_length", value=data["text"].apply(lambda row: text_len(row)))
     return data
 
+def create_text_emojis(data):
+    data.insert(loc=10, column="text_emojis", value=data["text"].apply(lambda row: ''.join(emex(row)) if type(row) == str else ""))
+    return data
+
 def post_process(output_address):
     data = pd.read_csv(output_address)
     statement = f"→ creating new column, {colors['green']}reply_to_sender{colors['default']}, "
@@ -34,6 +39,11 @@ def post_process(output_address):
     statement += f"at index {colors['blue']}9{colors['default']}"
     print(statement)
     data = create_text_length(data)
+
+    statement = f"→ creating new column, {colors['green']}text_emojis{colors['default']}, "
+    statement += f"at index {colors['blue']}10{colors['default']}"
+    print(statement)
+    data = create_text_emojis(data)
 
     statement = f"→ saving to {colors['green']}{output_address}{colors['default']}"
     print(statement)
