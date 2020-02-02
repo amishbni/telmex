@@ -102,11 +102,13 @@ def extract(input_address, output_address):
             # message_type
             message_type_div = message.select("div.body > div.media_wrap > div.media")
             poll_div = message.select("div.body > div.media_wrap > div.media_poll")
+            call_div = message.select("div.body > div.media_wrap > div.media_call")
             text_or_caption_div = message.select("div.body > div[class='text']")
             if(message_type_div):
-                message_type = message_type_div[0]["class"][-1].replace("media_", "")
+                mtc = message_type_div[0]["class"] # message_type_classes
+                message_type = [x.replace("media_", "") for x in mtc if "media_" in x][0]
                 if(message_type in ["photo", "video"]):
-                    message_type = message_type_div[0].select("div.body > div.title")[0].text.lower()
+                    message_type = message_type_div[0].select("div[class='body'] > div.title")[0].text.lower()
                 if(message_type in ["audio_file", "voice_message"]):
                     message_type = message_type.split("_")[0]
                 message_type = message_type.strip()
@@ -117,6 +119,8 @@ def extract(input_address, output_address):
                     caption = ""
             elif(poll_div):
                 message_type = "poll"
+            elif(call_div):
+                message_type = "call"
             else:
                 message_type = "text"
                 caption = ""
@@ -159,7 +163,7 @@ def extract(input_address, output_address):
             if(media_details_div):
                 media_details = media_details_div[0].text.strip().split(',')
                 if(len(media_details) == 1):
-                    if(message_type == "contact"):
+                    if(message_type in ["contact", "call", "self-destructing photo"]):
                         media_size = ""
                     else:
                         media_size = media_details[0].strip()
