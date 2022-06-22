@@ -1,6 +1,6 @@
 beautifulsoup4==4.8.2
 emoji==0.5.4
-numpy==1.18.0
+numpy==1.22.0
 pandas==0.25.3
 python-dateutil==2.8.1
 pytz==2019.3
